@@ -7,7 +7,7 @@ import {binarySTL} from './geometry.js';
 const $=id=>document.getElementById(id);
 let input=null,result=null,moldResult=null,ready=false,pending=false,resolveInit,rejectInit,initPromise,photoURL=null,mode='both',worker=null;
 function error(message){$('progress-box').hidden=true;$('error-box').hidden=false;$('error-box').textContent=message;pending=false;updateControls();}
-function updateControls(){ $('generate').disabled=!input||pending;$('demo-button').disabled=pending;for(const id of ['input-file','clear-file','profile','width','height','thickness'])$(id).disabled=pending;for(const id of ['download-skull','download-skin','download-report','generate-molds'])$(id).disabled=!result||pending;for(const id of ['download-female','download-male','download-mold-report'])$(id).disabled=!moldResult||pending; }
+function updateControls(){ $('generate').disabled=!input||pending;$('demo-button').disabled=pending;for(const id of ['input-file','clear-file','profile','width','height','thickness'])$(id).disabled=pending;$('height').disabled=pending||$('profile').value==='morpheus';for(const id of ['download-skull','download-skin','download-report','generate-molds'])$(id).disabled=!result||pending;for(const id of ['download-female','download-male','download-mold-report'])$(id).disabled=!moldResult||pending; }
 function clearResult(){result=null;moldResult=null;$('mold-status').textContent='先生成面皮，再生成配套阴阳模。';for(const id of ['skull-size','skin-size'])$(id).textContent='等待生成';for(const id of ['skull-quality','skin-quality'])$(id).textContent='—';$('result-state').textContent='等待生成';updateControls();}
 function progress(text,percent){$('progress-box').hidden=false;$('error-box').hidden=true;$('progress-text').textContent=text;$('progress-percent').textContent=Math.round(percent)+'%';$('progress').value=percent;}
 function createWorker(){
@@ -82,7 +82,7 @@ zone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDe
 $('clear-file').addEventListener('click',()=>{input=null;$('input-file').value='';$('file-card').hidden=true;clearResult();});
 $('thickness').addEventListener('input',()=>{$('thickness-value').value=(+$('thickness').value).toFixed(1)+' mm';clearResult();});
 for(const id of ['width','height'])$(id).addEventListener('change',clearResult);
-$('profile').addEventListener('change',()=>{clearResult();$('calibration-note').textContent=$('profile').value==='morpheus'?'官方公开说明给出约 4 mm 面皮、约 2 mm 眼周参考；宽高仍需 CAD 基准，本工具不标记为 1:1。':'输入目标面皮的外缘宽高。尺寸校准与真实机械贴合需分别核实。';if($('profile').value==='morpheus'){$('thickness').value=4;$('thickness-value').value='4.0 mm';}});
+$('profile').addEventListener('change',()=>{clearResult();$('calibration-note').textContent=$('profile').value==='morpheus'?'参考官方面皮宽度 175.43 mm，整张脸等比缩放；高度随人脸比例自动计算，见生成报告。此项为尺寸参考。':'输入目标面皮的外缘宽高。尺寸校准与真实机械贴合需分别核实。';if($('profile').value==='morpheus')$('width').value=175.43;updateControls();});
 
 let landmarkerPromise;
 async function photoLandmarks(bitmap){

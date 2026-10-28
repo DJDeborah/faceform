@@ -62,7 +62,8 @@ export function castingMolds(vertices,faces,settings={},progress=()=>{}){
   const box=bounds(vertices),thickness=Number(settings.thickness??4),margin=14,base=8;
   let step=Number(settings.moldResolution??.6);if(!(step>=.15&&step<=2)||!(thickness>=.5&&thickness<=10))throw Error('模具采样或厚度不在有效范围');
   // Keep memory bounded in a visitor's browser, reporting the actual sampling.
-  step=Math.max(step,Math.sqrt((box.size[0]+2*margin)*(box.size[1]+2*margin)/180000));
+  const maxSamples=Math.max(10000,Math.min(1000000,Number(settings.maxMoldSamples??180000)));
+  step=Math.max(step,Math.sqrt((box.size[0]+2*margin)*(box.size[1]+2*margin)/maxSamples));
   const nx=Math.ceil((box.size[0]+2*margin)/step)+1,ny=Math.ceil((box.size[1]+2*margin)/step)+1,x0=box.center[0]-(nx-1)*step/2,y0=box.center[1]-(ny-1)*step/2;
   progress('采样光滑的脸部外表面',5);const {hi,lo}=raster(vertices,faces,nx,ny,x0,y0,step),mask=Uint8Array.from(hi,Number.isFinite);
   if(mask.reduce((a,b)=>a+b,0)<100)throw Error('正面可用表面过小，请检查朝向');

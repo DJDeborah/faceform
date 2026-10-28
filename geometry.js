@@ -70,7 +70,7 @@ export function thickShell(vertices,faces,thickness){
   return {vertices:out,faces:new Uint32Array(indices)};
 }
 export function calibratePair(skin,skull,patch,settings){
-  const box=bounds(patch.vertices),sx=settings.width/box.size[0],sy=settings.height/box.size[1],sz=Math.sqrt(sx*sy);
+  const box=bounds(patch.vertices),sx=settings.width/box.size[0],sy=settings.profile==='morpheus'?sx:settings.height/box.size[1],sz=settings.profile==='morpheus'?sx:Math.sqrt(sx*sy);
   const transform=v=>{const result=new Float32Array(v.length);for(let i=0;i<v.length;i+=3){result[i]=(v[i]-box.center[0])*sx;result[i+1]=(v[i+1]-box.center[1])*sy;result[i+2]=(v[i+2]-box.center[2])*sz;}return result;};
   return {skin:transform(skin),skull:transform(skull),patch:transform(patch.vertices),scale:[sx,sy,sz],calibration:'bounding dimensions only; mechanical mating not certified'};
 }

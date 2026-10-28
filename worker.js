@@ -21,7 +21,7 @@ self.onmessage=async({data})=>{try{
     const report={version:'0.1.0',inputKind:data.landmarks?'photo':data.vertices?'mesh':'reference',units:'mm',
       method:fit.method,fitResidual:fit.rmse??null,initialFitResidual:fit.initialRmse??null,fitResidualUnits:data.landmarks?'pixels':'source-model mm',
       photoReconstruction:'statistical estimate; hidden skull anatomy is not measured',
-      mechanicalCalibration:{profile:settings.profile,widthMm:settings.width,heightMm:settings.height,skinThicknessMm:settings.thickness,status:'dimension reference only; mounting and mechanical fit unverified'},
+      mechanicalCalibration:{profile:settings.profile,widthMm:settings.width,heightMm:meshQuality(pair.patch,patch.faces).sizeMm[1],scaling:settings.profile==='morpheus'?'uniform; reference official Morpheus 175.43 mm width':'independent width and height',skinThicknessMm:settings.thickness,status:'dimension reference only; mounting and mechanical fit unverified'},
       faceRegion:patch.region,skull:meshQuality(pair.skull,model.skullFaces),faceSkin:meshQuality(shell.vertices,shell.faces),
       limitations:['No individual muscle reconstruction','No CT ground truth','No physical print or silicone mounting validation','No independent self-intersection certification'],
       source:'https://github.com/sculptor2022/sculptor',license:'Original model terms apply; application code has separate MIT license'};
